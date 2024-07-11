@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Trip {
+  id             String   @id @default(uuid())
+  destino        String
+  inicio_viagem  DateTime
+  fim_viagem     DateTime
+  is_confirmed   Boolean  @default(false)
+  criacao_viagem DateTime @default(now())
+
+  participantes Participantes[]
+  atividades    Atividade[]
+  links         Link[]
+
+  @@map("trips")
+}
+
+model Participantes {
+  id String @id @default(uuid())
+
+  name         String?
+  email        String
+  is_confirmed Boolean @default(false)
+  is_dono      Boolean @default(false)
+  trip_id      String
+
+  trip Trip @relation(fields: [trip_id], references: [id])
+
+  @@map("participantes")
+}
+
+model Atividade {
+  id             String   @id @default(uuid())
+  titulo         String
+  data_atividade DateTime
+  trip_id        String
+
+  trip Trip @relation(fields: [trip_id], references: [id])
+
+  @@map("atividades")
+}
+
+model Link {
+  id      String @id @default(uuid())
+  titulo  String
+  url     String
+  trip_id String
+
+  trip Trip @relation(fields: [trip_id], references: [id])
+
+  @@map("links")
+}
